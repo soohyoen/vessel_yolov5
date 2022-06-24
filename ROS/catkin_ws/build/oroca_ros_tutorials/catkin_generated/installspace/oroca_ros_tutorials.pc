@@ -1,0 +1,8 @@
+prefix=/home/soohyoen/catkin_ws/install
+
+Name: oroca_ros_tutorials
+Description: Description of oroca_ros_tutorials
+Version: 0.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib 
+Requires: 

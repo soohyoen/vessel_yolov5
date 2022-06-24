@@ -1,0 +1,2 @@
+basics:beginner_tutorials
+-DCATKIN_DEVEL_PREFIX=/home/soohyoen/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/soohyoen/catkin_ws/install -G Unix Makefiles
