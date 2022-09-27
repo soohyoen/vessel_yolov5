@@ -48,11 +48,16 @@ from utils.general import (LOGGER, Profile, check_file, check_img_size, check_im
                            increment_path, non_max_suppression, print_args, scale_boxes, strip_optimizer, xyxy2xywh)
 from utils.plots import Annotator, colors, save_one_box
 from utils.torch_utils import select_device, smart_inference_mode
-
+import time
 from scipy.spatial import KDTree
 from webcolors import (
     CSS3_HEX_TO_NAMES,
     hex_to_rgb)
+
+global cell_phone_counter
+cell_phone_counter = 0
+global counter
+counter = 0 
 
 def convert_rgb_to_names(rgb_tuple):
     
@@ -189,24 +194,31 @@ def run(
                         c = int(cls)  # integer class
                         label = None if hide_labels else (names[c] if hide_conf else f'{names[c]} {conf:.2f}')
                         annotator.box_label(xyxy, label, color=colors(c, True))
-                  
+                        
                         if names[c] == "cell phone" :
-                           save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
-                           path = f'./{save_dir}/crops/cell phone/{p.stem}.jpg' 
+                           
+                           global counter 
+                           save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{counter}.jpg', BGR=True)
+                           
+                           for x in range(1):
+                               global cell_phone_counter
+                               path = f'./{save_dir}/crops/cell phone/{cell_phone_counter}.jpg' 
+                               ct = ColorThief(path)
+                               dominant_color = ct.get_color(quality=1)
+                               color_name = convert_rgb_to_names(dominant_color)
+                           
+                               cv2.putText(im0, f"{color_name}",
+                                  (int(xyxy[2]+5), int((xyxy[1]+xyxy[3])/2)-25),
+                                  cv2.FONT_HERSHEY_SIMPLEX ,
+                                  0.58,
+                                  (255, 0, 255),2)
+                               cell_phone_counter += 1
+                               counter += 1
 
-                           ct = ColorThief(path)
-                           dominant_color = ct.get_color(quality=1)
-                           color_name = convert_rgb_to_names(dominant_color)
-                           
-                           cv2.putText(im0, f"{color_name}",
-                                   (int(xyxy[2]+5), int((xyxy[1]+xyxy[3])/2)-25),
-                                   cv2.FONT_HERSHEY_SIMPLEX ,
-                                   0.58,
-                                   (255, 0, 255),2) 
-                           
+
 
                     if save_crop:
-                        save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
+                       save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
 
             # Stream results
             im0 = annotator.result()
