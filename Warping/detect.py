@@ -49,6 +49,7 @@ from utils.torch_utils import select_device, smart_inference_mode
 import cv2
 import numpy as np
 import time
+from PIL import Image
 
 global counter
 counter = 0
@@ -179,31 +180,33 @@ def run(
                         annotator.box_label(xyxy, label, color=colors(c, True))
 
                         if names[c] == "cell phone" :
-                
-                           global counter 
-                           save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{counter}.jpg', BGR=True)
+                           global counter
+                           image0 = cv2.cvtColor(im0, cv2.COLOR_BGR2RGB)
+                           im = Image.fromarray(image0)
+                           im.save(save_dir/f'{counter}_1.jpg')                           
 
-                           for x in range(1):
-                               global cell_phone_counter 
-                               path = f'./{save_dir}/crops/cell phone/{cell_phone_counter}.jpg'
-                               
-                               src = cv2.imread(f"{path}", cv2.IMREAD_COLOR)
-                               height, width, channel = src.shape
+                           src = cv2.imread(save_dir/f'{counter}_1.jpg', cv2.IMREAD_COLOR)
+                           height, width, channel = src.shape
+                           print(height, width, channel)
 
-                            #   srcPoint = np.array([[int(f"{xyxy[0]}"),int(f"{xyxy[1]}")],[int(f"{xyxy[2]}"),int(f"{xyxy[1]}")],[int(f"{xyxy[2]}"),int(f"{xyxy[3]}")],[int(f"{xyxy[0]}"),int(f"{xyxy[3]}")]],dtype = np.float32)
-                               # dstPoint = np.array([[0, 0], [width, 0], [width, height], [0, height]], dtype=np.float32)
+                           x1 = int(float(f'{xyxy[0]}'))
+                           x2 = int(float(f'{xyxy[2]}'))
+                           y1 = int(float(f'{xyxy[1]}'))
+                           y2 = int(float(f'{xyxy[3]}'))
 
-                               matrix = cv2.getPerspectiveTransform(xyxy, im0)
-                               dst = cv2.warpPerspective(xyxy, matrix, (width, height))
+                           srcPoint = np.array([[x1,y1],[x2,y1],[x2,y2],[x1,y2]],dtype = np.float32)
+                           dstPoint = np.array([[0, 0], [width, 0], [width, height], [0, height]], dtype=np.float32)
 
-                               cv2.imshow("dst", dst)
-                               print("It is Cell Phone? \n Click picture and press x")
-                               while(True):
-                                   if cv2.waitKey(1) & 0xFF == ord('x'):
+                           matrix = cv2.getPerspectiveTransform(srcPoint, dstPoint)
+                           dst = cv2.warpPerspective(src, matrix, (width, height))
+
+                           cv2.imshow("dst", dst)
+                           print("It is Cell Phone? \n Click picture and press x")
+                           while(True):
+                              if cv2.waitKey(1) & 0xFF == ord('x'):
                                       cv2.destroyAllWindows()
                                       break
-                               cell_phone_counter += 1
-                               counter += 1
+                           counter += 1
 
 
                     if save_crop:
