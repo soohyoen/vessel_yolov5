@@ -63,17 +63,13 @@ def back(*args):
 def on_level_change(pos):
     global img # 밖에있는 img를 갖고 옴
     global value_number 
-    value = pos * 16 # 16 X 16 = 256 이므로 255가 아니라 0값으로 바뀜
+    value = pos # 16 X 16 = 256 이므로 255가 아니라 0값으로 바뀜
     # value = np.clip(value, 0, 255) 넘파이에서 제공하는 함수를 이용해도 된다.
 
     #if value >= 255: # 256일때 강제로 255로 변경
     #    value = 255
-    if value > 200:
+    if value == 1:
        value_number += 1
-       print(value_number) 
-
-    img[:] = value
-    cv2.imshow('image', img)
 
 def convert_rgb_to_names(rgb_tuple):
     
@@ -228,7 +224,7 @@ def run(
                     windows.append(p)
                     cv2.namedWindow(str(p), cv2.WINDOW_NORMAL | cv2.WINDOW_KEEPRATIO)  # allow window resize (Linux)
 
-                    cv2.createTrackbar('level',str(p),0,16,on_level_change)
+                    cv2.createTrackbar('push to break',str(p),0,1,on_level_change)
 
                     # create Button
                     #cv2.createButton("Back", back,None, cv2.QT_PUSH_BUTTON,1)
