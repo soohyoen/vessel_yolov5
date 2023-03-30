@@ -18,8 +18,6 @@ imageB = imutils.resize(imageB, width=400)
 stitcher = Stitcher()
 result, vis = stitcher.stitch([imageA, imageB], showMatches=True)
 
-
-
 cv2.imshow("Image A", imageA)
 cv2.imshow("Image B", imageB)
 cv2.imshow("Keypoint Matches", vis)
